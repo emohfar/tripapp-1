@@ -1,7 +1,10 @@
 from django.contrib.auth import authenticate
+<<<<<<< HEAD
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+=======
+>>>>>>> upstream/master
 
 from . import account_pb2_grpc
 from .account_pb2 import *
@@ -9,6 +12,7 @@ from .account_pb2 import *
 
 class AccountService(account_pb2_grpc.AccountServiceServicer):
     def login(self, request, context):
+<<<<<<< HEAD
 
         # check with email
         try:
@@ -71,6 +75,33 @@ class AccountService(account_pb2_grpc.AccountServiceServicer):
             return SignupResp(result=result, user=user_summary)
 
         return SignupResp(result=RawMessage(succuss=False, message='something wrong!'))
+=======
+        print(request)
+
+        # login with username
+        if request.username:
+            user = authenticate(username=request.username, password=request.password)
+
+            # user isn't available
+            if user is None:
+                result = RawMessage(success=False, message='username or password is wrong.')
+                return LoginResp(result=result, user=None, token=None)
+
+            # user is available
+            else:
+                result = RawMessage(success=True, message='login is successfully')
+                user_summary = UserSummary(user_id=user.id, username=user.username,
+                                           full_name='%s %s' % (user.first_name, user.last_name))
+                return LoginResp(result=result, user_summary=user_summary)
+        # login with email
+
+        # request isn't valid
+        result = RawMessage(success=False, message='request is not valid')
+        return LoginResp(result=result)
+
+    def signup(self, request, context):
+        return super().signup(request, context)
+>>>>>>> upstream/master
 
     def get_user(self, request, context):
         return super().get_user(request, context)
